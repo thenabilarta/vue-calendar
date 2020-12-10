@@ -35,7 +35,9 @@
 
   let currentMonthDays;
 
-  const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  console.log(dayjs(new Date(2020, 5)).format('MMMM YYYY'));
+
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const TODAY = dayjs().format('YYYY-MM-DD');
 
   const INITIAL_YEAR = dayjs().format('YYYY');
@@ -50,7 +52,7 @@
 
   console.log(dayjs(new Date(2020, 4, 5)));
 
-  console.log('Hari apa? ' + dayjs(new Date(2020, 3, 5)).day());
+  console.log('Hari apa? ' + WEEKDAYS[dayjs(new Date(2020, 10, 12)).day()]);
 
   console.log(dayjs('2020-12-01').subtract(1, 'month'));
 
@@ -63,9 +65,11 @@
       dayjs(`${year}-${month}-01`).daysInMonth()
     );
 
-    console.log(currentMonthDays);
+    console.log('Isi current month days = ' + currentMonthDays);
 
-    console.log('getWeekday isinya = ' + currentMonthDays[0].date);
+    console.log('Isi current month days[date] = ' + currentMonthDays[0].date);
+
+    console.log('getWeekday isinya = ' + getWeekday(currentMonthDays[0].date));
   }
 
   function getNumberOfDaysInMonth(year, month) {
@@ -75,7 +79,10 @@
     return dayjs(`${year}-${month}-01`).daysInMonth();
   }
 
-  function createDaysForCurrentMonth(year, month) {
+  function createDaysForCurrentMonth(
+    year = INITIAL_YEAR,
+    month = INITIAL_MONTH
+  ) {
     return [...Array(getNumberOfDaysInMonth(year, month))].map((day, index) => {
       return {
         date: dayjs(`${year}-${month}-${index + 1}`).format('YYYY-MM-DD'),
@@ -85,22 +92,56 @@
     });
   }
 
-  function createDaysForPreviousMonth(year, month) {
+  function createDaysForPreviousMonth(
+    year = INITIAL_YEAR,
+    month = INITIAL_MONTH
+  ) {
     const firstDayOfTheMonthWeekday = getWeekday(currentMonthDays[0].date);
 
     const previousMonth = dayjs(`${year}-${month}-01`).subtract(1, 'month');
+
+    console.log(
+      'First day of the month weekday isinya = ' + firstDayOfTheMonthWeekday
+    );
+
+    console.log('Previous month isinya = ' + previousMonth);
+
+    console.log(
+      'Previous month diubah dari unix isinya = ' + previousMonth.month()
+    );
 
     // Cover first day of the month being sunday (firstDayOfTheMonthWeekday === 0)
     const visibleNumberOfDaysFromPreviousMonth = firstDayOfTheMonthWeekday
       ? firstDayOfTheMonthWeekday - 1
       : 6;
 
+    console.log(
+      'Visible number of days from previous months = ' +
+        visibleNumberOfDaysFromPreviousMonth
+    );
+
+    console.log(
+      'Isi current month days[0].date = ' +
+        dayjs(currentMonthDays[0].date)
+          .subtract(visibleNumberOfDaysFromPreviousMonth, 'day')
+          .date()
+    );
+
     const previousMonthLastMondayDayOfMonth = dayjs(currentMonthDays[0].date)
       .subtract(visibleNumberOfDaysFromPreviousMonth, 'day')
       .date();
 
+    console.log(
+      'Isi previous month last monday of the month = ' +
+        previousMonthLastMondayDayOfMonth
+    );
+
+    console.log([...Array(visibleNumberOfDaysFromPreviousMonth)]);
+
     return [...Array(visibleNumberOfDaysFromPreviousMonth)].map(
       (day, index) => {
+        console.log('Previous month year = ' + previousMonth.year());
+
         return {
           date: dayjs(
             `${previousMonth.year()}-${previousMonth.month() +
