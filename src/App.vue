@@ -1,9 +1,12 @@
 <template>
   <div id="app">
-    <p>Welcome to Vue JS</p>
-    <p>{{ getDays }}</p>
-    <ol>
+    <ol class="day-of-week" id="days-of-week">
       <li v-for="(w, index) in weekdays" :key="index">{{ w }}</li>
+    </ol>
+    <ol class="days-grid" id="calendar-days">
+      <li class="calendar-day" v-for="(c, index) in getDays" :key="index">
+        {{ c.dayOfMonth }}
+      </li>
     </ol>
   </div>
 </template>
@@ -12,6 +15,8 @@
   import dayjs from 'dayjs';
   import weekday from 'dayjs/plugin/weekday';
   import weekOfYear from 'dayjs/plugin/weekOfYear';
+
+  import './style.css';
 
   dayjs.extend(weekday);
   dayjs.extend(weekOfYear);
@@ -33,18 +38,24 @@
     'Dec',
   ];
 
+  [...Array(9)].map((angka, index) => {
+    console.log(index);
+  });
+
   let currentMonthDays;
 
   console.log(dayjs(new Date(2020, 5)).format('MMMM YYYY'));
 
-  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const TODAY = dayjs().format('YYYY-MM-DD');
 
-  const INITIAL_YEAR = dayjs().format('YYYY');
+  // const INITIAL_YEAR = dayjs().format('YYYY');
+  const INITIAL_YEAR = 2019;
 
   console.log('Initial Year = ' + INITIAL_YEAR);
 
-  const INITIAL_MONTH = dayjs().format('M');
+  // const INITIAL_MONTH = dayjs().format('M');
+  const INITIAL_MONTH = 2;
 
   console.log('Initial Month = ' + INITIAL_MONTH);
 
@@ -96,6 +107,12 @@
     year = INITIAL_YEAR,
     month = INITIAL_MONTH
   ) {
+    currentMonthDays = createDaysForCurrentMonth(
+      year,
+      month,
+      dayjs(`${year}-${month}-01`).daysInMonth()
+    );
+
     const firstDayOfTheMonthWeekday = getWeekday(currentMonthDays[0].date);
 
     const previousMonth = dayjs(`${year}-${month}-01`).subtract(1, 'month');
@@ -154,6 +171,28 @@
     );
   }
 
+  function createDaysForNextMonth(year = INITIAL_YEAR, month = INITIAL_MONTH) {
+    const lastDayOfTheMonthWeekday = getWeekday(
+      `${year}-${month}-${currentMonthDays.length}`
+    );
+
+    const nextMonth = dayjs(`${year}-${month}-01`).add(1, 'month');
+
+    const visibleNumberOfDaysFromNextMonth = lastDayOfTheMonthWeekday
+      ? 7 - lastDayOfTheMonthWeekday
+      : lastDayOfTheMonthWeekday;
+
+    return [...Array(visibleNumberOfDaysFromNextMonth)].map((day, index) => {
+      return {
+        date: dayjs(
+          `${nextMonth.year()}-${nextMonth.month() + 1}-${index + 1}`
+        ).format('YYYY-MM-DD'),
+        dayOfMonth: index + 1,
+        isCurrentMonth: false,
+      };
+    });
+  }
+
   function getWeekday(date) {
     console.log('Isi dari getweekday = ' + dayjs(date).weekday());
     return dayjs(date).weekday();
@@ -168,7 +207,11 @@
     },
     computed: {
       getDays() {
-        return monthsInYear[dayjs().get('month')];
+        return [
+          ...createDaysForPreviousMonth(),
+          ...createDaysForCurrentMonth(),
+          ...createDaysForNextMonth(),
+        ];
       },
     },
     mounted() {
@@ -176,7 +219,7 @@
       console.log(WEEKDAYS);
       console.log(TODAY);
       createCalendar();
-      console.log(createDaysForPreviousMonth());
+      console.log(createDaysForCurrentMonth());
     },
   };
 </script>
