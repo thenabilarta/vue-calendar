@@ -1,5 +1,19 @@
 <template>
   <div id="app">
+    <header>
+      <sui-dropdown
+        placeholder="Gender"
+        selection
+        :options="year"
+        v-model="INITIAL_YEAR.value"
+      />
+      <sui-dropdown
+        placeholder="Gender"
+        selection
+        :options="month"
+        v-model="INITIAL_MONTH.value"
+      />
+    </header>
     <ol class="day-of-week" id="days-of-week">
       <li class="day-list" v-for="(w, index) in weekdays" :key="index">
         {{ w }}
@@ -32,9 +46,106 @@
     name: 'App',
     data() {
       return {
-        INITIAL_YEAR: 2020,
-        INITIAL_MONTH: 11,
+        INITIAL_YEAR: { text: '2020', value: 2020 },
+        INITIAL_MONTH: { text: 'December', value: 12 },
         weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        current: null,
+        year: [
+          {
+            text: '2015',
+            value: 2015,
+          },
+          {
+            text: '2016',
+            value: 2016,
+          },
+          {
+            text: '2017',
+            value: 2017,
+          },
+          {
+            text: '2018',
+            value: 2018,
+          },
+          {
+            text: '2019',
+            value: 2019,
+          },
+          {
+            text: '2020',
+            value: 2020,
+          },
+          {
+            text: '2021',
+            value: 2021,
+          },
+          {
+            text: '2022',
+            value: 2022,
+          },
+          {
+            text: '2023',
+            value: 2023,
+          },
+          {
+            text: '2024',
+            value: 2024,
+          },
+          {
+            text: '2025',
+            value: 2025,
+          },
+        ],
+        month: [
+          {
+            text: 'January',
+            value: 1,
+          },
+          {
+            text: 'February',
+            value: 2,
+          },
+          {
+            text: 'March',
+            value: 3,
+          },
+          {
+            text: 'April',
+            value: 4,
+          },
+          {
+            text: 'May',
+            value: 5,
+          },
+          {
+            text: 'June',
+            value: 6,
+          },
+          {
+            text: 'July',
+            value: 7,
+          },
+          {
+            text: 'August',
+            value: 8,
+          },
+          {
+            text: 'September',
+            value: 9,
+          },
+          {
+            text: 'October',
+            value: 10,
+          },
+          {
+            text: 'November',
+            value: 11,
+          },
+          {
+            text: 'December',
+            value: 12,
+          },
+        ],
       };
     },
     methods: {
@@ -126,14 +237,17 @@
       calendarList() {
         return [
           ...this.createDaysForPreviousMonth(
-            this.INITIAL_YEAR,
-            this.INITIAL_MONTH
+            this.INITIAL_YEAR.value,
+            this.INITIAL_MONTH.value
           ),
           ...this.createDaysForCurrentMonth(
-            this.INITIAL_YEAR,
-            this.INITIAL_MONTH
+            this.INITIAL_YEAR.value,
+            this.INITIAL_MONTH.value
           ),
-          ...this.createDaysForNextMonth(this.INITIAL_YEAR, this.INITIAL_MONTH),
+          ...this.createDaysForNextMonth(
+            this.INITIAL_YEAR.value,
+            this.INITIAL_MONTH.value
+          ),
         ];
       },
     },

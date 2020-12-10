@@ -15,6 +15,13 @@ body {
   --day-label-size: 20px;
 }
 
+header {
+  padding: 2rem 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
 #app {
   padding: 20px;
 }
@@ -46,6 +53,14 @@ li {
 
 .not-current {
   background-color: rgb(238, 238, 238) !important;
+}
+
+.not-current span {
+  opacity: 0.5;
+}
+
+#calendar-days {
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .calendar-day {
