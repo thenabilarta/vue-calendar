@@ -4,6 +4,21 @@
   box-sizing: border-box;
 }
 
+body {
+  font-family: sans-serif;
+  font-weight: 100;
+  --grey-100: #e4e9f0;
+  --grey-200: #cfd7e3;
+  --grey-300: #b5c0cd;
+  --grey-800: #3e4e63;
+  --grid-gap: 1px;
+  --day-label-size: 20px;
+}
+
+#app {
+  padding: 20px;
+}
+
 ol,
 li {
   padding: 0;
@@ -25,6 +40,14 @@ li {
   padding-top: 10px;
 }
 
+.day-list {
+  text-align: center;
+}
+
+.not-current {
+  background-color: rgb(238, 238, 238) !important;
+}
+
 .calendar-day {
   position: relative;
   min-height: 100px;
@@ -35,4 +58,13 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.days-grid {
+  height: 100%;
+  position: relative;
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
+  border-top: solid 1px black;
+  background-color: #e2e2e2;
 }
