@@ -1,34 +1,279 @@
 <template>
   <div id="app">
-    <header>
+    <div class="navigation">
+      <h2>{{ selectedDate }} {{ selectedMonth }} {{ selectedYear }}</h2>
+      <sui-button>Add Event</sui-button>
       <sui-dropdown
-        placeholder="Gender"
+        placeholder="Select Display"
         selection
-        :options="year"
-        v-model="INITIAL_YEAR.value"
+        :options="displayList"
+        v-model="current"
       />
-      <sui-dropdown
-        placeholder="Gender"
-        selection
-        :options="month"
-        v-model="INITIAL_MONTH.value"
+    </div>
+    <div class="date-input">
+      <sui-input
+        placeholder="Search..."
+        type="date"
+        v-model="currentDate"
+        @change="changeDate"
       />
-    </header>
-    <ol class="day-of-week" id="days-of-week">
-      <li class="day-list" v-for="(w, index) in weekdays" :key="index">
-        {{ w }}
-      </li>
-    </ol>
-    <ol class="days-grid" id="calendar-days">
-      <li
-        class="calendar-day"
-        :class="c.isCurrentMonth ? '' : 'not-current'"
-        v-for="(c, index) in calendarList"
-        :key="index"
-      >
-        <span>{{ c.dayOfMonth }}</span>
-      </li>
-    </ol>
+      <sui-button-group>
+        <sui-button content="Prev" @click="onClickPrev" />
+        <sui-button content="Today" @click="onClickToday" />
+        <sui-button content="Next" @click="onClickNext" />
+      </sui-button-group>
+      <sui-button-group>
+        <sui-button
+          :class="buttonFilterActive === 'year' && 'button-active'"
+          @click="changeToYear"
+          >Year</sui-button
+        >
+        <sui-button
+          :class="buttonFilterActive === 'month' && 'button-active'"
+          @click="changeToMonth"
+          >Month</sui-button
+        >
+        <sui-button
+          :class="buttonFilterActive === 'day' && 'button-active'"
+          @click="changeToDay"
+          >Day</sui-button
+        >
+      </sui-button-group>
+    </div>
+    <main>
+      <div v-if="showTable === 'year'" class="year">
+        <ol class="month-of-year">
+          <li class="month-list" v-for="(m, index) in monthsList" :key="index">
+            <span @click="onClickMonthOfYear(index)">{{ m }}</span>
+          </li>
+        </ol>
+      </div>
+      <div v-if="showTable === 'month'">
+        <ol class="day-of-week" id="days-of-week">
+          <li class="day-list" v-for="(w, index) in weekdays" :key="index">
+            {{ w }}
+          </li>
+        </ol>
+        <ol class="days-grid" id="calendar-days">
+          <li
+            class="calendar-day"
+            :class="c.isCurrentMonth ? '' : 'not-current'"
+            v-for="(c, index) in calendarList"
+            :key="index"
+          >
+            <span @click="onClickDateNumber(c.date)" class="dayNumber">{{
+              c.dayOfMonth
+            }}</span>
+          </li>
+        </ol>
+      </div>
+      <div class="day" v-if="showTable === 'day'">
+        <sui-table striped>
+          <sui-table-header>
+            <sui-table-row>
+              <sui-table-header-cell class="time">Time</sui-table-header-cell>
+              <sui-table-header-cell class="events"
+                >Events</sui-table-header-cell
+              >
+            </sui-table-row>
+          </sui-table-header>
+          <sui-table-body>
+            <sui-table-row>
+              <sui-table-cell class="time">00:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">00:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">01:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">01:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">02:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">02:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">03:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">03:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">04:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">04:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">05:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">05:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">06:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">06:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">07:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">07:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">08:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">08:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">09:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">09:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">10:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">10:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">11:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">11:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">12:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">12:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">13:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">13:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">14:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">14:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">15:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">15:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">16:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">16:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">17:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">17:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">18:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">18:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">19:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">19:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">20:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">20:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">21:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">21:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">22:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">22:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">23:00</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+            <sui-table-row>
+              <sui-table-cell class="time">23:30</sui-table-cell>
+              <sui-table-cell></sui-table-cell>
+            </sui-table-row>
+          </sui-table-body>
+        </sui-table>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -36,8 +281,7 @@
   import dayjs from 'dayjs';
   import weekday from 'dayjs/plugin/weekday';
   import weekOfYear from 'dayjs/plugin/weekOfYear';
-
-  import './style.css';
+  import './index.css';
 
   dayjs.extend(weekday);
   dayjs.extend(weekOfYear);
@@ -46,105 +290,43 @@
     name: 'App',
     data() {
       return {
-        INITIAL_YEAR: { text: '2020', value: 2020 },
-        INITIAL_MONTH: { text: 'December', value: 12 },
+        currentDate: dayjs().format('YYYY-MM-DD'),
+        dateToday: null,
+        showTable: 'month',
         weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         current: null,
-        year: [
+        buttonFilterActive: 'month',
+        displayList: [
           {
-            text: '2015',
-            value: 2015,
-          },
-          {
-            text: '2016',
-            value: 2016,
-          },
-          {
-            text: '2017',
-            value: 2017,
-          },
-          {
-            text: '2018',
-            value: 2018,
-          },
-          {
-            text: '2019',
-            value: 2019,
-          },
-          {
-            text: '2020',
-            value: 2020,
-          },
-          {
-            text: '2021',
-            value: 2021,
-          },
-          {
-            text: '2022',
-            value: 2022,
-          },
-          {
-            text: '2023',
-            value: 2023,
-          },
-          {
-            text: '2024',
-            value: 2024,
-          },
-          {
-            text: '2025',
-            value: 2025,
-          },
-        ],
-        month: [
-          {
-            text: 'January',
+            text: 'Polytron',
             value: 1,
           },
           {
-            text: 'February',
+            text: 'Xiaomi',
             value: 2,
           },
           {
-            text: 'March',
+            text: 'Dell',
             value: 3,
           },
           {
-            text: 'April',
+            text: 'Samsung',
             value: 4,
           },
-          {
-            text: 'May',
-            value: 5,
-          },
-          {
-            text: 'June',
-            value: 6,
-          },
-          {
-            text: 'July',
-            value: 7,
-          },
-          {
-            text: 'August',
-            value: 8,
-          },
-          {
-            text: 'September',
-            value: 9,
-          },
-          {
-            text: 'October',
-            value: 10,
-          },
-          {
-            text: 'November',
-            value: 11,
-          },
-          {
-            text: 'December',
-            value: 12,
-          },
+        ],
+        monthsList: [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
         ],
       };
     },
@@ -169,24 +351,19 @@
           month,
           dayjs(`${year}-${month}-01`).daysInMonth()
         );
-
         const firstDayOfTheMonthWeekday = this.getWeekday(
           currentMonthDays[0].date
         );
-
         const previousMonth = dayjs(`${year}-${month}-01`).subtract(1, 'month');
-
         // Cover first day of the month being sunday (firstDayOfTheMonthWeekday === 0)
         const visibleNumberOfDaysFromPreviousMonth = firstDayOfTheMonthWeekday
           ? firstDayOfTheMonthWeekday - 1
           : 6;
-
         const previousMonthLastMondayDayOfMonth = dayjs(
           currentMonthDays[0].date
         )
           .subtract(visibleNumberOfDaysFromPreviousMonth, 'day')
           .date();
-
         return [...Array(visibleNumberOfDaysFromPreviousMonth)].map(
           (day, index) => {
             return {
@@ -206,17 +383,13 @@
           month,
           dayjs(`${year}-${month}-01`).daysInMonth()
         );
-
         const lastDayOfTheMonthWeekday = this.getWeekday(
           `${year}-${month}-${currentMonthDays.length}`
         );
-
         const nextMonth = dayjs(`${year}-${month}-01`).add(1, 'month');
-
         const visibleNumberOfDaysFromNextMonth = lastDayOfTheMonthWeekday
           ? 7 - lastDayOfTheMonthWeekday
           : lastDayOfTheMonthWeekday;
-
         return [...Array(visibleNumberOfDaysFromNextMonth)].map(
           (day, index) => {
             return {
@@ -232,23 +405,117 @@
       getNumberOfDaysInMonth(year, month) {
         return dayjs(`${year}-${month}-01`).daysInMonth();
       },
+      changeToYear() {
+        this.showTable = 'year';
+        this.buttonFilterActive = 'year';
+      },
+      changeToMonth() {
+        this.showTable = 'month';
+        this.buttonFilterActive = 'month';
+      },
+      changeToDay() {
+        this.showTable = 'day';
+        this.buttonFilterActive = 'day';
+      },
+      onClickDateNumber(date) {
+        console.log(date);
+        this.currentDate = dayjs(date).format('YYYY-MM-DD');
+        this.buttonFilterActive = 'day';
+        this.showTable = 'day';
+      },
+      changeDate(e) {
+        console.log(e.target.value);
+        this.showTable = 'day';
+        this.buttonFilterActive = 'day';
+      },
+      onClickToday() {
+        this.currentDate = dayjs().format('YYYY-MM-DD');
+      },
+      onClickMonthOfYear(i) {
+        console.log(i);
+        this.currentDate = dayjs()
+          .month(i)
+          .format('YYYY-MM-DD');
+        this.showTable = 'month';
+        this.buttonFilterActive = 'month';
+      },
+      onClickPrev() {
+        switch (this.buttonFilterActive) {
+          case 'year':
+            this.currentDate = dayjs(this.currentDate)
+              .subtract(1, 'year')
+              .format('YYYY-MM-DD');
+            break;
+          case 'month':
+            this.currentDate = dayjs(this.currentDate)
+              .subtract(1, 'month')
+              .format('YYYY-MM-DD');
+            break;
+          case 'day':
+            this.currentDate = dayjs(this.currentDate)
+              .subtract(1, 'day')
+              .format('YYYY-MM-DD');
+            break;
+          default:
+            console.log('Mantap gan');
+        }
+      },
+      onClickNext() {
+        switch (this.buttonFilterActive) {
+          case 'year':
+            this.currentDate = dayjs(this.currentDate)
+              .add(1, 'year')
+              .format('YYYY-MM-DD');
+            break;
+          case 'month':
+            this.currentDate = dayjs(this.currentDate)
+              .add(1, 'month')
+              .format('YYYY-MM-DD');
+            break;
+          case 'day':
+            this.currentDate = dayjs(this.currentDate)
+              .add(1, 'day')
+              .format('YYYY-MM-DD');
+            break;
+          default:
+            console.log('Mantap gan');
+        }
+      },
     },
     computed: {
+      INITIAL_DATE() {
+        let splitted = this.currentDate.split('-');
+        return splitted[2];
+      },
+      INITIAL_MONTH() {
+        let splitted = this.currentDate.split('-');
+        return splitted[1];
+      },
+      INITIAL_YEAR() {
+        let splitted = this.currentDate.split('-');
+        return splitted[0];
+      },
       calendarList() {
         return [
           ...this.createDaysForPreviousMonth(
-            this.INITIAL_YEAR.value,
-            this.INITIAL_MONTH.value
+            this.INITIAL_YEAR,
+            this.INITIAL_MONTH
           ),
           ...this.createDaysForCurrentMonth(
-            this.INITIAL_YEAR.value,
-            this.INITIAL_MONTH.value
+            this.INITIAL_YEAR,
+            this.INITIAL_MONTH
           ),
-          ...this.createDaysForNextMonth(
-            this.INITIAL_YEAR.value,
-            this.INITIAL_MONTH.value
-          ),
+          ...this.createDaysForNextMonth(this.INITIAL_YEAR, this.INITIAL_MONTH),
         ];
+      },
+      selectedDate() {
+        return this.INITIAL_DATE;
+      },
+      selectedMonth() {
+        return this.monthsList[this.INITIAL_MONTH - 1];
+      },
+      selectedYear() {
+        return this.INITIAL_YEAR;
       },
     },
   };
